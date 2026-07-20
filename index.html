@@ -103,9 +103,48 @@
     .summary { text-align:left; font-size:14px; color:#6b4052; }
     .hidden{ display:none; }
     .top-emoji { font-size:42px; margin-bottom:6px; }
-    .btn-primary { background:linear-gradient(90deg,var(--accent),#ff4c8e); color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:700; }
+    .btn-primary { background:linear-gradient(90deg,var(--accent),#ff4c8e); color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer; }
     .hint-area{ display:flex; gap:8px; margin-top:8px; }
     small.note{ font-size:12px; color:#9d6b82; }
+    
+    /* Action Log */
+    .action-log {
+      background: rgba(255,182,214,0.15);
+      border: 1px solid rgba(255,110,170,0.25);
+      border-radius: 10px;
+      padding: 12px;
+      margin: 12px 0;
+      font-size: 12px;
+      color: #6b4052;
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+    }
+    .action-log.show { display: block; }
+    .action-log .action-item {
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,110,170,0.12);
+      margin-bottom: 6px;
+    }
+    .action-log .action-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    .action-log .timestamp {
+      font-size: 11px;
+      color: #9d6b82;
+      margin-right: 6px;
+    }
+    .action-log .action-text {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .action-log .action-value {
+      color: #6b4052;
+      margin-left: 4px;
+    }
+    
     @media (max-width:420px){ .app{ margin:10px; } }
   </style>
 </head>
@@ -122,6 +161,9 @@
     </header>
 
     <main>
+      <!-- Action Log -->
+      <div id="actionLog" class="action-log"></div>
+
       <!-- PAGE: intro -->
       <section id="page-intro" class="page">
         <div class="card center">
@@ -267,7 +309,7 @@
             Return snap aa jaye time se 
           </div>
           <div style="margin-top:14px;" class="center">
-            <button class="opt" onclick="resetFlow()">Start Over</button>
+            <button class="opt" onclick="closeForm()">Done</button>
           </div>
         </div>
       </section>
@@ -287,6 +329,39 @@
       amount: "",
     };
 
+    // action log
+    let actionLog = [];
+
+    function getTime() {
+      const now = new Date();
+      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function logAction(actionText, actionValue = '') {
+      const time = getTime();
+      const action = { time, text: actionText, value: actionValue };
+      actionLog.push(action);
+      updateActionLog();
+    }
+
+    function updateActionLog() {
+      const logContainer = document.getElementById('actionLog');
+      if (actionLog.length === 0) {
+        logContainer.classList.remove('show');
+        return;
+      }
+      logContainer.classList.add('show');
+      logContainer.innerHTML = actionLog.map((action, idx) => 
+        `<div class="action-item">
+          <span class="timestamp">${action.time}</span>
+          <span class="action-text">${action.text}</span>
+          <span class="action-value">${action.value}</span>
+        </div>`
+      ).join('');
+      // Auto scroll to bottom
+      logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
     // page helpers
     function show(id){
       document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
@@ -300,20 +375,37 @@
     // branching based on described flow
     function choose(from, val){
       if(from === 'intro'){
-        if(val === 'yes') show('page-next');
-        else show('page-nosure');
+        if(val === 'yes') {
+          logAction('Question 1:', 'Answered YES');
+          show('page-next');
+        }
+        else {
+          logAction('Question 1:', 'Answered NO');
+          show('page-nosure');
+        }
       } else if(from === 'next'){
-        // next question -> select flow
-        if(val === 'yes') show('page-select');
-        else show('page-nosure');
+        if(val === 'yes') {
+          logAction('Ready Question:', 'Answered YES');
+          show('page-select');
+        }
+        else {
+          logAction('Ready Question:', 'Answered NO');
+          show('page-nosure');
+        }
       } else if(from === 'nosure'){
-        if(val === 'smallNo') show('page-nosure-baby');
-        else if(val === 'bigYes') show('page-select');
+        if(val === 'smallNo') {
+          logAction('Confirmation:', 'Answered NO (small)');
+          show('page-nosure-baby');
+        }
+        else if(val === 'bigYes') {
+          logAction('Confirmation:', 'Answered YES');
+          show('page-select');
+        }
       } else if(from === 'nosurebaby'){
-        // both options lead to selection
+        logAction('Baby Confirmation:', val === 'yes' ? 'yes' : 'yes darling');
         show('page-select');
       } else if(from === 'select'){
-        // both yes/hanji -> gifts
+        logAction('Selection Style:', val === 'yes' ? 'yes' : 'hanji');
         show('page-gifts');
       }
     }
@@ -326,10 +418,12 @@
         state.choices.push(val);
         btn.style.borderColor = 'rgba(255,110,170,0.28)';
         btn.style.background = '#fff0f6';
+        logAction('Selected Gift:', val);
       } else {
         state.choices.splice(i,1);
         btn.style.borderColor = '';
         btn.style.background = '';
+        logAction('Removed Gift:', val);
       }
     }
 
@@ -337,40 +431,42 @@
       const v = document.getElementById('hintInput').value.trim();
       if(v){
         state.hint = v;
-        // ensure the "hint" is added as a choice (special)
         if(!state.choices.includes('Hint: ' + v)) state.choices.push('Hint: ' + v);
-        alert('Hint saved!');
+        logAction('Hint Saved:', v);
       } else {
-        alert('Please write a hint first.');
+        logAction('Error:', 'Hint field was empty');
       }
     }
 
     function goToAddressPrompt(){
-      // If the user picked leave hint only or any choice, always go to Address? as described
       if(state.choices.length === 0){
         if(!confirm('You did not pick anything. Continue?')) return;
+        logAction('Proceeding:', 'Without any selections');
+      } else {
+        logAction('Total Gifts Selected:', state.choices.length + ' item(s)');
       }
       show('page-address-ask');
     }
 
     function addressChoice(wantsAddress){
       if(wantsAddress){
+        logAction('Address Question:', 'Answered YES');
         show('page-address');
       } else {
-        // say jaisi apki mrzi malkin and ask amount directly
+        logAction('Address Question:', 'Answered NO');
         show('page-noaddress');
       }
     }
 
     function askAmount(fromAddress){
-      // if called after saving address, grab address (if present)
       if(fromAddress){
         const a = document.getElementById('address').value.trim();
         if(!a){
-          alert('Please enter address or go back.');
+          logAction('Error:', 'Address field was empty');
           return;
         }
         state.address = a;
+        logAction('Address Saved:', a);
       }
       show('page-amount');
     }
@@ -378,10 +474,12 @@
     function finishNoAddress(){
       const amt = document.getElementById('amountNoAddress').value.trim();
       if(!amt){
-        alert('Please enter amount.');
+        logAction('Error:', 'Amount field was empty');
         return;
       }
       state.amount = amt;
+      logAction('Amount Saved:', '₹' + escapeHtml(amt));
+      
       // build summary
       const lines = [];
       if(state.choices.length) {
@@ -399,10 +497,12 @@
     function finish(){
       const amt = document.getElementById('amount').value.trim();
       if(!amt){
-        alert('Please enter amount.');
+        logAction('Error:', 'Amount field was empty');
         return;
       }
       state.amount = amt;
+      logAction('Amount Saved:', '₹' + escapeHtml(amt));
+      
       // build summary
       const lines = [];
       if(state.choices.length) {
@@ -417,16 +517,21 @@
       show('page-final');
     }
 
+    function closeForm(){
+      logAction('Form Status:', 'COMPLETED ✓');
+    }
+
     function resetFlow(){
       state.choices = [];
       state.hint = "";
       state.address = "";
       state.amount = "";
+      actionLog = [];
+      document.getElementById('actionLog').classList.remove('show');
       document.getElementById('hintInput').value = '';
       document.getElementById('address').value = '';
       document.getElementById('amount').value = '';
       document.getElementById('amountNoAddress').value = '';
-      // reset choice buttons style
       document.querySelectorAll('[data-val]').forEach(b=>{
         b.style.borderColor='';
         b.style.background='';
