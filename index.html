@@ -170,7 +170,7 @@
       <!-- PAGE: select yes style -->
       <section id="page-select" class="page hidden">
         <div class="card center">
-          <div class="question">Instead of saying what you want, Just select the options. I’ll take care of rest</div>
+          <div class="question">Instead of saying what you want, Just select the options. I'll take care of rest</div>
           <div class="controls">
             <button class="opt" onclick="choose('select','yes')">yes</button>
             <button class="opt" onclick="choose('select','hanji')">hanji</button>
@@ -232,11 +232,14 @@
 
       <!-- PAGE: jaisi apki mrzi malkin (no address) -->
       <section id="page-noaddress" class="page hidden">
-        <div class="card center">
-          <div class="question">jaisi apki mrzi malkin</div>
-          <div class="muted"> Please enter the amount.</div>
+        <div class="card">
+          <div class="question center">jaisi apki mrzi malkin</div>
+          <div class="muted" style="margin-top:6px;"> Please enter the amount.</div>
           <div style="margin-top:10px">
-            <button class="opt" onclick="askAmount(true)">enter amount</button>
+            <input type="number" id="amountNoAddress" placeholder="Enter amount (e.g., 1500)" />
+            <div style="margin-top:10px" class="center">
+              <button class="btn-primary" onclick="finishNoAddress()">Submit</button>
+            </div>
           </div>
         </div>
       </section>
@@ -354,7 +357,7 @@
       if(wantsAddress){
         show('page-address');
       } else {
-        // say jaisi apki mrzi malkin and ask amount
+        // say jaisi apki mrzi malkin and ask amount directly
         show('page-noaddress');
       }
     }
@@ -370,6 +373,27 @@
         state.address = a;
       }
       show('page-amount');
+    }
+
+    function finishNoAddress(){
+      const amt = document.getElementById('amountNoAddress').value.trim();
+      if(!amt){
+        alert('Please enter amount.');
+        return;
+      }
+      state.amount = amt;
+      // build summary
+      const lines = [];
+      if(state.choices.length) {
+        lines.push('<strong>Selected:</strong><br>' + state.choices.map(c=>'- '+escapeHtml(c)).join('<br>'));
+      } else {
+        lines.push('<strong>Selected:</strong><br>- Nothing selected');
+      }
+      if(state.hint) lines.push('<strong>Hint:</strong> ' + escapeHtml(state.hint));
+      lines.push('<strong>Address:</strong> Not provided (jaisi apki mrzi malkin)');
+      lines.push('<strong>Amount:</strong> ₹' + escapeHtml(state.amount));
+      document.getElementById('finalSummary').innerHTML = lines.join('<br><br>');
+      show('page-final');
     }
 
     function finish(){
@@ -388,7 +412,6 @@
       }
       if(state.hint) lines.push('<strong>Hint:</strong> ' + escapeHtml(state.hint));
       if(state.address) lines.push('<strong>Address:</strong> ' + escapeHtml(state.address));
-      else lines.push('<strong>Address:</strong> Not provided (jaisi apki mrzi malkin)');
       lines.push('<strong>Amount:</strong> ₹' + escapeHtml(state.amount));
       document.getElementById('finalSummary').innerHTML = lines.join('<br><br>');
       show('page-final');
@@ -402,6 +425,7 @@
       document.getElementById('hintInput').value = '';
       document.getElementById('address').value = '';
       document.getElementById('amount').value = '';
+      document.getElementById('amountNoAddress').value = '';
       // reset choice buttons style
       document.querySelectorAll('[data-val]').forEach(b=>{
         b.style.borderColor='';
