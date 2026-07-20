@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Yo Wagwan</title>
+  <style>
+    :root{
+      --pink1:#ffd6e8;
+      --pink2:#ffb3d6;
+      --accent:#ff6fa3;
+      --card:#fff7fb;
+      --muted:#7a3a5a;
+      --glass: rgba(255,255,255,0.7);
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    /* background tile (teddy + chocolate) */
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: linear-gradient(135deg,var(--pink1),var(--pink2));
+      background-attachment:fixed;
+      color:var(--muted);
+    }
+    /* tiled SVG with emoji for fun */
+    .bg {
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='60'><text x='8' y='42' font-size='30'>🧸🍫🍬</text></svg>");
+      opacity:0.22;
+      mix-blend-mode:multiply;
+      z-index:0;
+    }
+    .app {
+      position:relative;
+      z-index:1;
+      width:100%;
+      max-width:420px;
+      margin:24px;
+      border-radius:18px;
+      box-shadow:0 8px 30px rgba(110,30,80,0.18);
+      overflow:hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,245,251,0.85));
+      backdrop-filter: blur(6px);
+    }
+    header{
+      padding:18px 20px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      background: linear-gradient(90deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
+      border-bottom:1px dashed rgba(255,110,170,0.18);
+    }
+    .logo {
+      width:56px; height:56px; border-radius:12px;
+      background: radial-gradient(circle at 30% 30%, #fff, #ffe6f3);
+      display:flex; align-items:center; justify-content:center;
+      font-size:26px; box-shadow:0 4px 10px rgba(255,120,170,0.12);
+    }
+    h1{margin:0;font-size:18px;line-height:1;color:var(--accent)}
+    p.lead{margin:2px 0 0;font-size:12px;color:#8b5a73}
+    main{padding:22px;}
+    .card {
+      background:var(--card);
+      border-radius:14px;
+      padding:18px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+      margin-bottom:16px;
+      min-height:72px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      flex-direction:column;
+    }
+    .question { font-weight:600; font-size:16px; margin-bottom:10px; }
+    .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    button.opt {
+      background:linear-gradient(180deg,#fff,#ffeefb);
+      border:2px solid rgba(255,110,170,0.12);
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:700;
+      color:var(--accent);
+      cursor:pointer;
+      box-shadow:0 6px 18px rgba(255,120,170,0.08);
+      transition:transform .12s ease, box-shadow .12s;
+    }
+    button.opt:hover{ transform:translateY(-3px); box-shadow:0 12px 24px rgba(255,120,170,0.14);}
+    .small{ font-size:14px; padding:8px 12px; }
+    input[type="text"], input[type="number"], textarea{
+      width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(120,60,90,0.06);
+      background:transparent; font-size:14px; outline:none; box-sizing:border-box;
+      margin-top:8px;
+    }
+    .muted { font-size:13px; color:#8b5a73; margin-top:6px; }
+    .center { text-align:center; }
+    footer{ padding:12px 20px; font-size:13px; color:#6b4052; text-align:center;}
+    .summary { text-align:left; font-size:14px; color:#6b4052; }
+    .hidden{ display:none; }
+    .top-emoji { font-size:42px; margin-bottom:6px; }
+    .btn-primary { background:linear-gradient(90deg,var(--accent),#ff4c8e); color:white; border:none; padding:10px 14px; border-radius:12px; font-weight:700; }
+    .hint-area{ display:flex; gap:8px; margin-top:8px; }
+    small.note{ font-size:12px; color:#9d6b82; }
+    @media (max-width:420px){ .app{ margin:10px; } }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+
+  <div class="app" role="application" aria-label="Gift picker">
+    <header>
+      <div class="logo">💖</div>
+      <div>
+        <h1>Yo Wagwan</h1>
+        <p class="lead">A cute little gift flow</p>
+      </div>
+    </header>
+
+    <main>
+      <!-- PAGE: intro -->
+      <section id="page-intro" class="page">
+        <div class="card center">
+          <div class="top-emoji">🧸🍫</div>
+          <div class="question">I have few questions for you — Yes or No?</div>
+          <div class="controls">
+            <button class="opt" onclick="choose('intro','yes')">Yes</button>
+            <button class="opt" onclick="choose('intro','no')">No</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: next question when yes -->
+      <section id="page-next" class="page hidden">
+        <div class="card center">
+          <div class="question">Great! Next question — are you ready?</div>
+          <div class="controls">
+            <button class="opt" onclick="choose('next','yes')">Yes</button>
+            <button class="opt" onclick="choose('next','no')">No</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: if first no -->
+      <section id="page-nosure" class="page hidden">
+        <div class="card center">
+          <div class="question">Are you sure?</div>
+          <div class="controls">
+            <button class="opt small" onclick="choose('nosure','smallNo')">no</button>
+            <button class="opt" onclick="choose('nosure','bigYes')">YES</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: if she says no again -->
+      <section id="page-nosure-baby" class="page hidden">
+        <div class="card center">
+          <div class="question">Are you sure, baby?</div>
+          <div class="controls">
+            <button class="opt" onclick="choose('nosurebaby','yes')">yes</button>
+            <button class="opt" onclick="choose('nosurebaby','yesdarling')">yes darling</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: select yes style -->
+      <section id="page-select" class="page hidden">
+        <div class="card center">
+          <div class="question">Instead of saying what you want, Just select the options. I’ll take care of rest</div>
+          <div class="controls">
+            <button class="opt" onclick="choose('select','yes')">yes</button>
+            <button class="opt" onclick="choose('select','hanji')">hanji</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: gift options -->
+      <section id="page-gifts" class="page hidden">
+        <div class="card">
+          <div class="question center">Pick from the options (you can pick multiple)</div>
+          <div class="controls" style="flex-direction:column; align-items:center;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;">
+              <button class="opt" data-val="Chudiya (bangles)" onclick="toggleChoice(this)">1. Chudiya</button>
+              <button class="opt" data-val="Clothes" onclick="toggleChoice(this)">2. Clothes</button>
+              <button class="opt" data-val="Chocolates" onclick="toggleChoice(this)">3. Chocolates</button>
+              <button class="opt" data-val="Ice cream" onclick="toggleChoice(this)">4. Ice cream</button>
+            </div>
+
+            <div style="width:100%; margin-top:6px;">
+              <div class="muted center">5. Leave a hint</div>
+              <div class="hint-area">
+                <input type="text" id="hintInput" placeholder="Write your hint here (if any)" />
+                <button class="opt small" onclick="leaveHint()">Save</button>
+              </div>
+              <small class="note">If you use hint, we'll ask address next.</small>
+            </div>
+
+            <div style="margin-top:12px;">
+              <button class="btn-primary" onclick="goToAddressPrompt()">Next</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: Address? -->
+      <section id="page-address-ask" class="page hidden">
+        <div class="card center">
+          <div class="question">Address?</div>
+          <div class="controls">
+            <button class="opt" onclick="addressChoice(true)">Yes</button>
+            <button class="opt" onclick="addressChoice(false)">No</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: enter address -->
+      <section id="page-address" class="page hidden">
+        <div class="card">
+          <div class="question center">Please enter the address</div>
+          <div>
+            <input type="text" id="address" placeholder="Address, city, landmark..." />
+            <div style="margin-top:10px" class="center">
+              <button class="btn-primary" onclick="askAmount(true)">Save & Next</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: jaisi apki mrzi malkin (no address) -->
+      <section id="page-noaddress" class="page hidden">
+        <div class="card center">
+          <div class="question">jaisi apki mrzi malkin</div>
+          <div class="muted">We won't ask the address. Please enter the amount.</div>
+          <div style="margin-top:10px">
+            <button class="opt" onclick="askAmount(true)">Okay, enter amount</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: ask amount -->
+      <section id="page-amount" class="page hidden">
+        <div class="card">
+          <div class="question center">Amount</div>
+          <div>
+            <input type="number" id="amount" placeholder="Enter amount (e.g., 1500)" />
+            <div style="margin-top:10px" class="center">
+              <button class="btn-primary" onclick="finish()">Submit</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: final -->
+      <section id="page-final" class="page hidden">
+        <div class="card">
+          <div class="top-emoji">🎁🧸</div>
+          <div class="question center">All set!</div>
+          <div class="summary" id="finalSummary"></div>
+          <div style="margin-top:12px;" class="center muted">
+            Return snap aa jaye time se and some teddy’s thats it
+          </div>
+          <div style="margin-top:14px;" class="center">
+            <button class="opt" onclick="resetFlow()">Start Over</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Made with ❤️ — open this file (index.html) in your browser.
+    </footer>
+  </div>
+
+  <script>
+    // state
+    const state = {
+      choices: [],
+      hint: "",
+      address: "",
+      amount: "",
+    };
+
+    // page helpers
+    function show(id){
+      document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    // initial
+    show('page-intro');
+
+    // branching based on described flow
+    function choose(from, val){
+      if(from === 'intro'){
+        if(val === 'yes') show('page-next');
+        else show('page-nosure');
+      } else if(from === 'next'){
+        // next question -> select flow
+        if(val === 'yes') show('page-select');
+        else show('page-nosure');
+      } else if(from === 'nosure'){
+        if(val === 'smallNo') show('page-nosure-baby');
+        else if(val === 'bigYes') show('page-select');
+      } else if(from === 'nosurebaby'){
+        // both options lead to selection
+        show('page-select');
+      } else if(from === 'select'){
+        // both yes/hanji -> gifts
+        show('page-gifts');
+      }
+    }
+
+    // multiple choice toggles
+    function toggleChoice(btn){
+      const val = btn.dataset.val;
+      const i = state.choices.indexOf(val);
+      if(i === -1){
+        state.choices.push(val);
+        btn.style.borderColor = 'rgba(255,110,170,0.28)';
+        btn.style.background = '#fff0f6';
+      } else {
+        state.choices.splice(i,1);
+        btn.style.borderColor = '';
+        btn.style.background = '';
+      }
+    }
+
+    function leaveHint(){
+      const v = document.getElementById('hintInput').value.trim();
+      if(v){
+        state.hint = v;
+        // ensure the "hint" is added as a choice (special)
+        if(!state.choices.includes('Hint: ' + v)) state.choices.push('Hint: ' + v);
+        alert('Hint saved!');
+      } else {
+        alert('Please write a hint first.');
+      }
+    }
+
+    function goToAddressPrompt(){
+      // If the user picked leave hint only or any choice, always go to Address? as described
+      if(state.choices.length === 0){
+        if(!confirm('You did not pick anything. Continue?')) return;
+      }
+      show('page-address-ask');
+    }
+
+    function addressChoice(wantsAddress){
+      if(wantsAddress){
+        show('page-address');
+      } else {
+        // say jaisi apki mrzi malkin and ask amount
+        show('page-noaddress');
+      }
+    }
+
+    function askAmount(fromAddress){
+      // if called after saving address, grab address (if present)
+      if(fromAddress){
+        const a = document.getElementById('address').value.trim();
+        if(!a){
+          alert('Please enter address or go back.');
+          return;
+        }
+        state.address = a;
+      }
+      show('page-amount');
+    }
+
+    function finish(){
+      const amt = document.getElementById('amount').value.trim();
+      if(!amt){
+        alert('Please enter amount.');
+        return;
+      }
+      state.amount = amt;
+      // build summary
+      const lines = [];
+      if(state.choices.length) {
+        lines.push('<strong>Selected:</strong><br>' + state.choices.map(c=>'- '+escapeHtml(c)).join('<br>'));
+      } else {
+        lines.push('<strong>Selected:</strong><br>- Nothing selected');
+      }
+      if(state.hint) lines.push('<strong>Hint:</strong> ' + escapeHtml(state.hint));
+      if(state.address) lines.push('<strong>Address:</strong> ' + escapeHtml(state.address));
+      else lines.push('<strong>Address:</strong> Not provided (jaisi apki mrzi malkin)');
+      lines.push('<strong>Amount:</strong> ₹' + escapeHtml(state.amount));
+      document.getElementById('finalSummary').innerHTML = lines.join('<br><br>');
+      show('page-final');
+    }
+
+    function resetFlow(){
+      state.choices = [];
+      state.hint = "";
+      state.address = "";
+      state.amount = "";
+      document.getElementById('hintInput').value = '';
+      document.getElementById('address').value = '';
+      document.getElementById('amount').value = '';
+      // reset choice buttons style
+      document.querySelectorAll('[data-val]').forEach(b=>{
+        b.style.borderColor='';
+        b.style.background='';
+      });
+      show('page-intro');
+    }
+
+    // small helper
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+  </script>
+</body>
+</html>
