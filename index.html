@@ -107,44 +107,6 @@
     .hint-area{ display:flex; gap:8px; margin-top:8px; }
     small.note{ font-size:12px; color:#9d6b82; }
     
-    /* Action Log */
-    .action-log {
-      background: rgba(255,182,214,0.15);
-      border: 1px solid rgba(255,110,170,0.25);
-      border-radius: 10px;
-      padding: 12px;
-      margin: 12px 0;
-      font-size: 12px;
-      color: #6b4052;
-      text-align: left;
-      max-height: 200px;
-      overflow-y: auto;
-      display: none;
-    }
-    .action-log.show { display: block; }
-    .action-log .action-item {
-      padding: 6px 0;
-      border-bottom: 1px solid rgba(255,110,170,0.12);
-      margin-bottom: 6px;
-    }
-    .action-log .action-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-    }
-    .action-log .timestamp {
-      font-size: 11px;
-      color: #9d6b82;
-      margin-right: 6px;
-    }
-    .action-log .action-text {
-      color: var(--accent);
-      font-weight: 600;
-    }
-    .action-log .action-value {
-      color: #6b4052;
-      margin-left: 4px;
-    }
-    
     @media (max-width:420px){ .app{ margin:10px; } }
   </style>
 </head>
@@ -160,160 +122,164 @@
       </div>
     </header>
 
-    <main>
-      <!-- Action Log -->
-      <div id="actionLog" class="action-log"></div>
-
-      <!-- PAGE: intro -->
-      <section id="page-intro" class="page">
-        <div class="card center">
-          <div class="top-emoji">🧸🍫</div>
-          <div class="question">I have few questions for you </div>
-          <div class="controls">
-            <button class="opt" onclick="choose('intro','yes')">Yes</button>
-            <button class="opt" onclick="choose('intro','no')">No</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE: next question when yes -->
-      <section id="page-next" class="page hidden">
-        <div class="card center">
-          <div class="question">Great! Next question — are you ready?</div>
-          <div class="controls">
-            <button class="opt" onclick="choose('next','yes')">Yes</button>
-            <button class="opt" onclick="choose('next','no')">No</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE: if first no -->
-      <section id="page-nosure" class="page hidden">
-        <div class="card center">
-          <div class="question">Are you sure?</div>
-          <div class="controls">
-            <button class="opt small" onclick="choose('nosure','smallNo')">no</button>
-            <button class="opt" onclick="choose('nosure','bigYes')">YES</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE: if she says no again -->
-      <section id="page-nosure-baby" class="page hidden">
-        <div class="card center">
-          <div class="question">Are you sure, baby?</div>
-          <div class="controls">
-            <button class="opt" onclick="choose('nosurebaby','yes')">yes</button>
-            <button class="opt" onclick="choose('nosurebaby','yesdarling')">yes darling</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE: select yes style -->
-      <section id="page-select" class="page hidden">
-        <div class="card center">
-          <div class="question">Instead of saying what you want, Just select the options. I'll take care of rest</div>
-          <div class="controls">
-            <button class="opt" onclick="choose('select','yes')">yes</button>
-            <button class="opt" onclick="choose('select','hanji')">hanji</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE: gift options -->
-      <section id="page-gifts" class="page hidden">
-        <div class="card">
-          <div class="question center">Pick from the options (you can pick multiple)</div>
-          <div class="controls" style="flex-direction:column; align-items:center;">
-            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;">
-              <button class="opt" data-val="Chudiya (bangles)" onclick="toggleChoice(this)">1. Chudiya</button>
-              <button class="opt" data-val="Clothes" onclick="toggleChoice(this)">2. Clothes</button>
-              <button class="opt" data-val="Chocolates" onclick="toggleChoice(this)">3. Chocolates</button>
-              <button class="opt" data-val="Ice cream" onclick="toggleChoice(this)">4. Ice cream</button>
+    <form action="https://formspree.io/f/maqrjlka" method="POST">
+      <main>
+        <!-- PAGE: intro -->
+        <section id="page-intro" class="page">
+          <div class="card center">
+            <div class="top-emoji">🧸🍫</div>
+            <div class="question">I have few questions for you </div>
+            <div class="controls">
+              <button class="opt" type="button" onclick="choose('intro','yes')">Yes</button>
+              <button class="opt" type="button" onclick="choose('intro','no')">No</button>
             </div>
+          </div>
+        </section>
 
-            <div style="width:100%; margin-top:6px;">
-              <div class="muted center">5. Leave a hint</div>
-              <div class="hint-area">
-                <input type="text" id="hintInput" placeholder="Write your hint here (if any)" />
-                <button class="opt small" onclick="leaveHint()">Save</button>
+        <!-- PAGE: next question when yes -->
+        <section id="page-next" class="page hidden">
+          <div class="card center">
+            <div class="question">Great! Next question — are you ready?</div>
+            <div class="controls">
+              <button class="opt" type="button" onclick="choose('next','yes')">Yes</button>
+              <button class="opt" type="button" onclick="choose('next','no')">No</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE: if first no -->
+        <section id="page-nosure" class="page hidden">
+          <div class="card center">
+            <div class="question">Are you sure?</div>
+            <div class="controls">
+              <button class="opt small" type="button" onclick="choose('nosure','smallNo')">no</button>
+              <button class="opt" type="button" onclick="choose('nosure','bigYes')">YES</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE: if she says no again -->
+        <section id="page-nosure-baby" class="page hidden">
+          <div class="card center">
+            <div class="question">Are you sure, baby?</div>
+            <div class="controls">
+              <button class="opt" type="button" onclick="choose('nosurebaby','yes')">yes</button>
+              <button class="opt" type="button" onclick="choose('nosurebaby','yesdarling')">yes darling</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE: select yes style -->
+        <section id="page-select" class="page hidden">
+          <div class="card center">
+            <div class="question">Instead of saying what you want, Just select the options. I'll take care of rest</div>
+            <div class="controls">
+              <button class="opt" type="button" onclick="choose('select','yes')">yes</button>
+              <button class="opt" type="button" onclick="choose('select','hanji')">hanji</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PAGE: gift options -->
+        <section id="page-gifts" class="page hidden">
+          <div class="card">
+            <div class="question center">Pick from the options (you can pick multiple)</div>
+            <div class="controls" style="flex-direction:column; align-items:center;">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;">
+                <button class="opt" type="button" data-val="Chudiya (bangles)" onclick="toggleChoice(this)">1. Chudiya</button>
+                <button class="opt" type="button" data-val="Clothes" onclick="toggleChoice(this)">2. Clothes</button>
+                <button class="opt" type="button" data-val="Chocolates" onclick="toggleChoice(this)">3. Chocolates</button>
+                <button class="opt" type="button" data-val="Ice cream" onclick="toggleChoice(this)">4. Ice cream</button>
               </div>
-              <small class="note">Chalo Jo apko chahiye woh bta do.</small>
-            </div>
 
-            <div style="margin-top:12px;">
-              <button class="btn-primary" onclick="goToAddressPrompt()">Next</button>
-            </div>
-          </div>
-        </div>
-      </section>
+              <div style="width:100%; margin-top:6px;">
+                <div class="muted center">5. Leave a hint</div>
+                <div class="hint-area">
+                  <input type="text" id="hintInput" placeholder="Write your hint here (if any)" />
+                  <button class="opt small" type="button" onclick="leaveHint()">Save</button>
+                </div>
+                <small class="note">Chalo Jo apko chahiye woh bta do.</small>
+              </div>
 
-      <!-- PAGE: Address? -->
-      <section id="page-address-ask" class="page hidden">
-        <div class="card center">
-          <div class="question">Address?</div>
-          <div class="controls">
-            <button class="opt" onclick="addressChoice(true)">Yes</button>
-            <button class="opt" onclick="addressChoice(false)">No</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- PAGE: enter address -->
-      <section id="page-address" class="page hidden">
-        <div class="card">
-          <div class="question center">Please enter the address</div>
-          <div>
-            <input type="text" id="address" placeholder="Address, city, landmark..." />
-            <div style="margin-top:10px" class="center">
-              <button class="btn-primary" onclick="askAmount(true)">Save & Next</button>
+              <div style="margin-top:12px;">
+                <button class="btn-primary" type="button" onclick="goToAddressPrompt()">Next</button>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- PAGE: jaisi apki mrzi malkin (no address) -->
-      <section id="page-noaddress" class="page hidden">
-        <div class="card">
-          <div class="question center">jaisi apki mrzi malkin</div>
-          <div class="muted" style="margin-top:6px;"> Please enter the amount.</div>
-          <div style="margin-top:10px">
-            <input type="number" id="amountNoAddress" placeholder="Enter amount (e.g., 1500)" />
-            <div style="margin-top:10px" class="center">
-              <button class="btn-primary" onclick="finishNoAddress()">Submit</button>
+        <!-- PAGE: Address? -->
+        <section id="page-address-ask" class="page hidden">
+          <div class="card center">
+            <div class="question">Address?</div>
+            <div class="controls">
+              <button class="opt" type="button" onclick="addressChoice(true)">Yes</button>
+              <button class="opt" type="button" onclick="addressChoice(false)">No</button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- PAGE: ask amount -->
-      <section id="page-amount" class="page hidden">
-        <div class="card">
-          <div class="question center">Amount</div>
-          <div>
-            <input type="number" id="amount" placeholder="Enter amount (e.g., 1500)" />
-            <div style="margin-top:10px" class="center">
-              <button class="btn-primary" onclick="finish()">Submit</button>
+        <!-- PAGE: enter address -->
+        <section id="page-address" class="page hidden">
+          <div class="card">
+            <div class="question center">Please enter the address</div>
+            <div>
+              <input type="text" id="address" name="address" placeholder="Address, city, landmark..." />
+              <div style="margin-top:10px" class="center">
+                <button class="btn-primary" type="button" onclick="askAmount(true)">Save & Next</button>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- PAGE: final -->
-      <section id="page-final" class="page hidden">
-        <div class="card">
-          <div class="top-emoji">🎁🧸</div>
-          <div class="question center">All set!</div>
-          <div class="summary" id="finalSummary"></div>
-          <div style="margin-top:12px;" class="center muted">
-            Return snap aa jaye time se 
+        <!-- PAGE: jaisi apki mrzi malkin (no address) -->
+        <section id="page-noaddress" class="page hidden">
+          <div class="card">
+            <div class="question center">jaisi apki mrzi malkin</div>
+            <div class="muted" style="margin-top:6px;"> Please enter the amount.</div>
+            <div style="margin-top:10px">
+              <input type="number" id="amountNoAddress" name="amount" placeholder="Enter amount (e.g., 1500)" />
+              <div style="margin-top:10px" class="center">
+                <button class="btn-primary" type="button" onclick="finishNoAddress()">Submit</button>
+              </div>
+            </div>
           </div>
-          <div style="margin-top:14px;" class="center">
-            <button class="opt" onclick="closeForm()">Done</button>
+        </section>
+
+        <!-- PAGE: ask amount -->
+        <section id="page-amount" class="page hidden">
+          <div class="card">
+            <div class="question center">Amount</div>
+            <div>
+              <input type="number" id="amount" name="amount" placeholder="Enter amount (e.g., 1500)" />
+              <div style="margin-top:10px" class="center">
+                <button class="btn-primary" type="button" onclick="finish()">Submit</button>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
-    </main>
+        </section>
+
+        <!-- PAGE: final -->
+        <section id="page-final" class="page hidden">
+          <div class="card">
+            <div class="top-emoji">🎁🧸</div>
+            <div class="question center">All set!</div>
+            <div class="summary" id="finalSummary"></div>
+            <!-- Hidden fields for form submission -->
+            <input type="hidden" id="gifts" name="gifts" />
+            <input type="hidden" id="hint" name="hint" />
+            <input type="hidden" id="finalAddress" name="address" />
+            <input type="hidden" id="finalAmount" name="amount" />
+            <div style="margin-top:12px;" class="center muted">
+              Return snap aa jaye time se 
+            </div>
+            <div style="margin-top:14px;" class="center">
+              <button class="btn-primary" type="submit" onclick="prepareSubmission()">Done</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </form>
 
     <footer>
       Made with ❤️ — open this file (index.html) in your browser.
@@ -329,7 +295,7 @@
       amount: "",
     };
 
-    // action log
+    // action log (invisible to user)
     let actionLog = [];
 
     function getTime() {
@@ -341,25 +307,7 @@
       const time = getTime();
       const action = { time, text: actionText, value: actionValue };
       actionLog.push(action);
-      updateActionLog();
-    }
-
-    function updateActionLog() {
-      const logContainer = document.getElementById('actionLog');
-      if (actionLog.length === 0) {
-        logContainer.classList.remove('show');
-        return;
-      }
-      logContainer.classList.add('show');
-      logContainer.innerHTML = actionLog.map((action, idx) => 
-        `<div class="action-item">
-          <span class="timestamp">${action.time}</span>
-          <span class="action-text">${action.text}</span>
-          <span class="action-value">${action.value}</span>
-        </div>`
-      ).join('');
-      // Auto scroll to bottom
-      logContainer.scrollTop = logContainer.scrollHeight;
+      console.log(`[${time}] ${actionText}: ${actionValue}`);
     }
 
     // page helpers
@@ -376,36 +324,36 @@
     function choose(from, val){
       if(from === 'intro'){
         if(val === 'yes') {
-          logAction('Question 1:', 'Answered YES');
+          logAction('Question 1', 'Answered YES');
           show('page-next');
         }
         else {
-          logAction('Question 1:', 'Answered NO');
+          logAction('Question 1', 'Answered NO');
           show('page-nosure');
         }
       } else if(from === 'next'){
         if(val === 'yes') {
-          logAction('Ready Question:', 'Answered YES');
+          logAction('Ready Question', 'Answered YES');
           show('page-select');
         }
         else {
-          logAction('Ready Question:', 'Answered NO');
+          logAction('Ready Question', 'Answered NO');
           show('page-nosure');
         }
       } else if(from === 'nosure'){
         if(val === 'smallNo') {
-          logAction('Confirmation:', 'Answered NO (small)');
+          logAction('Confirmation', 'Answered NO');
           show('page-nosure-baby');
         }
         else if(val === 'bigYes') {
-          logAction('Confirmation:', 'Answered YES');
+          logAction('Confirmation', 'Answered YES');
           show('page-select');
         }
       } else if(from === 'nosurebaby'){
-        logAction('Baby Confirmation:', val === 'yes' ? 'yes' : 'yes darling');
+        logAction('Baby Confirmation', val === 'yes' ? 'yes' : 'yes darling');
         show('page-select');
       } else if(from === 'select'){
-        logAction('Selection Style:', val === 'yes' ? 'yes' : 'hanji');
+        logAction('Selection Style', val === 'yes' ? 'yes' : 'hanji');
         show('page-gifts');
       }
     }
@@ -418,12 +366,12 @@
         state.choices.push(val);
         btn.style.borderColor = 'rgba(255,110,170,0.28)';
         btn.style.background = '#fff0f6';
-        logAction('Selected Gift:', val);
+        logAction('Selected Gift', val);
       } else {
         state.choices.splice(i,1);
         btn.style.borderColor = '';
         btn.style.background = '';
-        logAction('Removed Gift:', val);
+        logAction('Removed Gift', val);
       }
     }
 
@@ -432,28 +380,28 @@
       if(v){
         state.hint = v;
         if(!state.choices.includes('Hint: ' + v)) state.choices.push('Hint: ' + v);
-        logAction('Hint Saved:', v);
+        logAction('Hint Saved', v);
       } else {
-        logAction('Error:', 'Hint field was empty');
+        logAction('Error', 'Hint field was empty');
       }
     }
 
     function goToAddressPrompt(){
       if(state.choices.length === 0){
         if(!confirm('You did not pick anything. Continue?')) return;
-        logAction('Proceeding:', 'Without any selections');
+        logAction('Proceeding', 'Without any selections');
       } else {
-        logAction('Total Gifts Selected:', state.choices.length + ' item(s)');
+        logAction('Total Gifts Selected', state.choices.length + ' item(s)');
       }
       show('page-address-ask');
     }
 
     function addressChoice(wantsAddress){
       if(wantsAddress){
-        logAction('Address Question:', 'Answered YES');
+        logAction('Address Question', 'Answered YES');
         show('page-address');
       } else {
-        logAction('Address Question:', 'Answered NO');
+        logAction('Address Question', 'Answered NO');
         show('page-noaddress');
       }
     }
@@ -462,11 +410,11 @@
       if(fromAddress){
         const a = document.getElementById('address').value.trim();
         if(!a){
-          logAction('Error:', 'Address field was empty');
+          logAction('Error', 'Address field was empty');
           return;
         }
         state.address = a;
-        logAction('Address Saved:', a);
+        logAction('Address Saved', a);
       }
       show('page-amount');
     }
@@ -474,11 +422,11 @@
     function finishNoAddress(){
       const amt = document.getElementById('amountNoAddress').value.trim();
       if(!amt){
-        logAction('Error:', 'Amount field was empty');
+        logAction('Error', 'Amount field was empty');
         return;
       }
       state.amount = amt;
-      logAction('Amount Saved:', '₹' + escapeHtml(amt));
+      logAction('Amount Saved', '₹' + escapeHtml(amt));
       
       // build summary
       const lines = [];
@@ -491,17 +439,18 @@
       lines.push('<strong>Address:</strong> Not provided (jaisi apki mrzi malkin)');
       lines.push('<strong>Amount:</strong> ₹' + escapeHtml(state.amount));
       document.getElementById('finalSummary').innerHTML = lines.join('<br><br>');
+      logAction('Form Status', 'COMPLETED');
       show('page-final');
     }
 
     function finish(){
       const amt = document.getElementById('amount').value.trim();
       if(!amt){
-        logAction('Error:', 'Amount field was empty');
+        logAction('Error', 'Amount field was empty');
         return;
       }
       state.amount = amt;
-      logAction('Amount Saved:', '₹' + escapeHtml(amt));
+      logAction('Amount Saved', '₹' + escapeHtml(amt));
       
       // build summary
       const lines = [];
@@ -514,11 +463,17 @@
       if(state.address) lines.push('<strong>Address:</strong> ' + escapeHtml(state.address));
       lines.push('<strong>Amount:</strong> ₹' + escapeHtml(state.amount));
       document.getElementById('finalSummary').innerHTML = lines.join('<br><br>');
+      logAction('Form Status', 'COMPLETED');
       show('page-final');
     }
 
-    function closeForm(){
-      logAction('Form Status:', 'COMPLETED ✓');
+    function prepareSubmission(){
+      // Fill hidden fields with data before submission
+      document.getElementById('gifts').value = state.choices.join(', ');
+      document.getElementById('hint').value = state.hint || 'No hint provided';
+      document.getElementById('finalAddress').value = state.address || 'Not provided (jaisi apki mrzi malkin)';
+      document.getElementById('finalAmount').value = state.amount;
+      logAction('Form Submission', 'Submitted to Formspree');
     }
 
     function resetFlow(){
@@ -527,7 +482,6 @@
       state.address = "";
       state.amount = "";
       actionLog = [];
-      document.getElementById('actionLog').classList.remove('show');
       document.getElementById('hintInput').value = '';
       document.getElementById('address').value = '';
       document.getElementById('amount').value = '';
@@ -536,6 +490,7 @@
         b.style.borderColor='';
         b.style.background='';
       });
+      logAction('Form Reset', 'User clicked Start Over');
       show('page-intro');
     }
 
